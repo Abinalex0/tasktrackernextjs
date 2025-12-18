@@ -57,6 +57,10 @@
 //   );
 // }
 
+
+
+
+
 import Link from "next/link";
 import { connectDB } from "@/lib/db";
 import Task from "@/models/Task";
@@ -65,13 +69,11 @@ import { deleteTask } from "./actions";
 export default async function StudentDetail({
   params,
 }: {
-  params: { id?: string };
+  params: { id: string } | Promise<{ id: string }>;
 }) {
-  const id = params?.id;
-
-  if (!id) {
-    return <div>Invalid task id</div>;
-  }
+  // ✅ handle both object and Promise (Next 16 dev bug)
+  const resolvedParams = await Promise.resolve(params);
+  const id = resolvedParams.id;
 
   await connectDB();
   const task = await Task.findById(id).lean();

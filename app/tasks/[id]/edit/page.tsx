@@ -5,9 +5,11 @@ import { redirect } from "next/navigation";
 export default async function EditTaskPage({
   params,
 }: {
-  params: { id: string };
+  params: { id: string } | Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  // ✅ Handle Next.js 16 dev bug (params can be Promise)
+  const resolvedParams = await Promise.resolve(params);
+  const id = resolvedParams.id;
 
   await connectDB();
   const task = await Task.findById(id).lean();
