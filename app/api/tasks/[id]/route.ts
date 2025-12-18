@@ -69,20 +69,21 @@
 // }
 
 
+
+
 export const dynamic = "force-dynamic";
 
-
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Task from "@/models/Task";
 
 // -------------------- GET TASK BY ID --------------------
 export async function GET(
-  _req: Request,
+  _req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params; // ✅ MUST AWAIT
+    const { id } = await context.params;
 
     await connectDB();
     const task = await Task.findById(id).lean();
@@ -94,18 +95,21 @@ export async function GET(
     return NextResponse.json(task);
   } catch (err) {
     console.error("GET /api/tasks/[id] error:", err);
-    return NextResponse.json({ error: "Failed to fetch task" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch task" },
+      { status: 500 }
+    );
   }
 }
 
 // -------------------- UPDATE TASK --------------------
 export async function PUT(
-  request: Request,
+  req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params; // ✅ MUST AWAIT
-    const { title, description } = await request.json();
+    const { id } = await context.params;
+    const { title, description } = await req.json();
 
     await connectDB();
 
@@ -122,20 +126,22 @@ export async function PUT(
     return NextResponse.json(updated);
   } catch (err) {
     console.error("PUT /api/tasks/[id] error:", err);
-    return NextResponse.json({ error: "Failed to update task" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update task" },
+      { status: 500 }
+    );
   }
 }
 
 // -------------------- DELETE TASK --------------------
 export async function DELETE(
-  _req: Request,
+  _req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params; // ✅ MUST AWAIT
+    const { id } = await context.params;
 
     await connectDB();
-
     const deleted = await Task.findByIdAndDelete(id);
 
     if (!deleted) {
@@ -145,6 +151,9 @@ export async function DELETE(
     return NextResponse.json({ message: "Task deleted successfully" });
   } catch (err) {
     console.error("DELETE /api/tasks/[id] error:", err);
-    return NextResponse.json({ error: "Failed to delete task" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete task" },
+      { status: 500 }
+    );
   }
 }

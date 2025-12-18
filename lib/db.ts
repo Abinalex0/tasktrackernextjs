@@ -49,17 +49,17 @@ if (!cached) {
 }
 
 export async function connectDB() {
-  const MONGO_URL = process.env.MONGO_URL;
+  const MONGODB_URI = process.env.MONGODB_URI;
 
-  if (!MONGO_URL) {
-    throw new Error("MONGO_URL environment variable is missing");
+  if (!MONGODB_URI) {
+    throw new Error("MONGODB_URI environment variable is missing");
   }
 
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
     cached.promise = mongoose
-      .connect(MONGO_URL, { bufferCommands: false })
+      .connect(MONGODB_URI, { bufferCommands: false })
       .then((mongoose) => mongoose);
   }
 

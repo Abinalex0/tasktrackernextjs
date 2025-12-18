@@ -1,27 +1,31 @@
+import { connectDB } from "@/lib/db";
+import Task from "@/models/Task";
 import { redirect } from "next/navigation";
 
 export default async function EditTaskPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id } = await params;
+  const { id } = params;
 
-  const origin = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  await connectDB();
+  const task = await Task.findById(id).lean();
 
-  const res = await fetch(`${origin}/api/tasks/${id}`, { cache: "no-store" });
-  const task = await res.json();
+  if (!task) {
+    return <div>Task not found</div>;
+  }
 
   async function updateTask(formData: FormData) {
     "use server";
 
-    const title = formData.get("title");
-    const description = formData.get("description");
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
 
-    await fetch(`${origin}/api/tasks/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, description }),
+    await connectDB();
+    await Task.findByIdAndUpdate(id, {
+      title,
+      description,
     });
 
     redirect(`/tasks/${id}`);
@@ -39,7 +43,7 @@ export default async function EditTaskPage({
 
       <textarea
         name="description"
-        defaultValue={task.description}
+        defaultValue={task.description ?? ""}
         className="border p-2 w-full mb-4"
       />
 
