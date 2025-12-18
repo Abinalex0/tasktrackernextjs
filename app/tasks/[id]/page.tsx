@@ -58,23 +58,27 @@
 // }
 
 import Link from "next/link";
+import { connectDB } from "@/lib/db";
+import Task from "@/models/Task";
+import { deleteTask } from "./actions";
 
 export default async function StudentDetail({
   params,
 }: {
-  params: { id: string };
+  params: { id?: string };
 }) {
-  const { id } = params;
+  const id = params?.id;
 
-  const res = await fetch(`/api/tasks/${id}`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    return <div>Task not found</div>;
+  if (!id) {
+    return <div>Invalid task id</div>;
   }
 
-  const task = await res.json();
+  await connectDB();
+  const task = await Task.findById(id).lean();
+
+  if (!task) {
+    return <div>Task not found</div>;
+  }
 
   return (
     <div className="bg-white p-6 rounded shadow">
@@ -89,11 +93,8 @@ export default async function StudentDetail({
           Edit
         </Link>
 
-        <form action={`/tasks/${id}/delete`} method="post">
-          <button
-            type="submit"
-            className="px-4 py-2 bg-red-600 text-white rounded"
-          >
+        <form action={deleteTask.bind(null, id)}>
+          <button className="px-4 py-2 bg-red-600 text-white rounded">
             Delete
           </button>
         </form>
