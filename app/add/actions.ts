@@ -13,7 +13,6 @@ export async function createTask(formData: FormData) {
 
   await connectDB();
   await Task.create({ title, description });
-
-  revalidatePath("/tasks");
-  redirect("/tasks");
+  revalidatePath("/"); 
+  redirect("/");   
 }

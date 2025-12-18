@@ -13,6 +13,7 @@ export async function deleteTask(id: string) {
   await connectDB();
   await Task.findByIdAndDelete(id);
 
-  revalidatePath("/tasks");
-  redirect("/tasks");
+  revalidatePath("/"); 
+  redirect("/");         
 }
+
