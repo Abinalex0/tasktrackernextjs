@@ -57,15 +57,16 @@
 //   );
 // }
 
-
 import Link from "next/link";
-export default async function StudentDetail({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
 
-  // Build absolute URL using NEXT_PUBLIC_BASE_URL fallback
-  const origin = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+export default async function StudentDetail({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const { id } = params;
 
-  const res = await fetch(`${origin}/api/tasks/${id}`, {
+  const res = await fetch(`/api/tasks/${id}`, {
     cache: "no-store",
   });
 
@@ -79,24 +80,24 @@ export default async function StudentDetail({ params }: { params: Promise<{ id: 
     <div className="bg-white p-6 rounded shadow">
       <h1 className="text-2xl font-bold">{task.title}</h1>
       <p>{task.description ?? "No description"}</p>
+
       <div className="mt-6 flex gap-4">
-  <Link
-    href={`/tasks/${id}/edit`}
-    className="px-4 py-2 bg-blue-600 text-white rounded"
-  >
-    Edit
-  </Link>
+        <Link
+          href={`/tasks/${id}/edit`}
+          className="px-4 py-2 bg-blue-600 text-white rounded"
+        >
+          Edit
+        </Link>
 
-  <form action={`/tasks/${id}/delete`} method="post">
-    <button
-      type="submit"
-      className="px-4 py-2 bg-red-600 text-white rounded"
-    >
-      Delete
-    </button>
-  </form>
-</div>
-
+        <form action={`/tasks/${id}/delete`} method="post">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-red-600 text-white rounded"
+          >
+            Delete
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
